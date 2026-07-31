@@ -1,0 +1,13 @@
+# Se desarrolla en Windows y se despliega en Linux (Vercel): normalizamos a LF
+# para que no se cuelen CRLF en el repo ni en el build.
+* text=auto eol=lf
+
+# Binarios: que git no los toque.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary
