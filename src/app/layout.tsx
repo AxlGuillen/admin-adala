@@ -17,11 +17,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  // Base para las URLs absolutas que Next genera en el <head>.
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+  ),
   title: {
     default: "Panel Adala",
     template: "%s · Adala",
   },
   description: "Seguimiento de prospectos de campanas de Adala.",
+  // Es un panel interno: que no lo indexe nadie.
+  robots: { index: false, follow: false },
 };
 
 export default function RootLayout({

@@ -19,7 +19,8 @@ Abre http://localhost:3000 — te manda a `/login`.
 | --- | --- |
 | `NEXT_PUBLIC_SUPABASE_URL` | URL del proyecto |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Llave publica; se puede exponer, RLS es lo que protege |
-| `SUPABASE_SECRET_KEY` | Solo para dar de alta admins desde la terminal. Nunca se importa desde `src/` |
+| `SUPABASE_SECRET_KEY` | Opcional. Solo para dar de alta admins desde la terminal. Nunca se importa desde `src/` ni se sube a Vercel |
+| `NEXT_PUBLIC_APP_URL` | URL donde vive el panel, sin diagonal final. Local `http://localhost:3000` |
 
 ## Dar de alta un usuario del panel
 
