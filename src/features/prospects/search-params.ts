@@ -1,5 +1,6 @@
 import {
   createLoader,
+  createSerializer,
   parseAsInteger,
   parseAsString,
   parseAsStringLiteral,
@@ -29,6 +30,12 @@ export const prospectsFilters = {
 };
 
 export const loadProspectsFilters = createLoader(prospectsFilters);
+
+/**
+ * Arma la URL de descarga con los mismos parsers que lee el servidor, para que
+ * el Excel salga con exactamente los filtros que el usuario tiene en pantalla.
+ */
+export const serializeProspectsFilters = createSerializer(prospectsFilters);
 
 export type ProspectsFilters = {
   q: string;

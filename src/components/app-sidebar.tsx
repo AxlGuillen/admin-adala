@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogOut, Users } from "lucide-react";
+import { LayoutDashboard, LogOut, Users } from "lucide-react";
 
 import { logout } from "@/app/(auth)/login/actions";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -25,6 +25,7 @@ import { initials } from "@/lib/format";
  * `src/app/(dashboard)/` y `src/features/`. No hay nada mas que registrar.
  */
 const NAV_ITEMS = [
+  { href: "/", label: "Resumen", icon: LayoutDashboard },
   { href: "/prospectos", label: "Prospectos", icon: Users },
 ] as const;
 
@@ -55,7 +56,13 @@ export function AppSidebar({
                 <SidebarMenuItem key={item.href}>
                   <SidebarMenuButton
                     asChild
-                    isActive={pathname.startsWith(item.href)}
+                    // "/" solo marca activo en exacto: con startsWith
+                    // se encenderia en todas las rutas.
+                    isActive={
+                      item.href === "/"
+                        ? pathname === "/"
+                        : pathname.startsWith(item.href)
+                    }
                   >
                     <Link href={item.href}>
                       <item.icon />

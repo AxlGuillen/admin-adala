@@ -19,8 +19,9 @@ export function ProspectStatsCards({ stats }: { stats: ProspectStats }) {
           <CardContent className="flex items-center justify-between gap-4">
             <div className="space-y-1">
               <p className="text-muted-foreground text-sm">{label}</p>
-              <p className="text-3xl font-semibold tabular-nums">
-                {stats[key]}
+              {/* Cifras proporcionales: tabular-nums solo en columnas. */}
+              <p className="text-3xl font-semibold">
+                {stats[key].toLocaleString("es-MX")}
               </p>
             </div>
             <Icon className="text-muted-foreground size-5 shrink-0" />

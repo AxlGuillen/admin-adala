@@ -52,6 +52,11 @@ export async function updateSession(request: NextRequest) {
   );
 
   if (!user && !isPublic) {
+    // Las rutas de API responden 401, no un redirect: si la sesion expira, un
+    // <a download> guardaria el HTML del login con extension .xlsx.
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    }
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("next", pathname);

@@ -49,7 +49,14 @@ cambios a un agente, ese archivo es el contrato.
 
 ## Modulos
 
+- **Resumen** (`/`) — metricas, prospectos por dia de los ultimos 30 dias,
+  desglose por servicio y por origen de campana, y los ultimos 5 registros.
 - **Prospectos** (`/prospectos`) — listado, buscador, filtros por servicio,
-  estado y periodo, y panel de detalle con UTMs y consentimientos.
+  estado y periodo, panel de detalle con UTMs y consentimientos, y descarga a
+  Excel de todo lo que cumple los filtros activos.
+
+El Excel trae columnas vacias de Estatus, Responsable y Notas para que el equipo
+lleve el seguimiento a mano mientras ese modulo no existe, y una hoja `Info` con
+los filtros que se aplicaron.
 
 Siguiente: control de seguimiento (estatus, asignacion, notas y bitacora).

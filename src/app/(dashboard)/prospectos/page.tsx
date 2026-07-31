@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import type { SearchParams } from "nuqs/server";
 
 import { Skeleton } from "@/components/ui/skeleton";
+import { ExportButton } from "@/features/prospects/components/export-button";
 import { ProspectStatsCards } from "@/features/prospects/components/prospect-stats";
 import { ProspectsFilters } from "@/features/prospects/components/prospects-filters";
 import { ProspectsPagination } from "@/features/prospects/components/prospects-pagination";
@@ -30,11 +31,17 @@ export default async function ProspectosPage({ searchParams }: PageProps) {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Prospectos</h1>
-        <p className="text-muted-foreground text-sm">
-          Contactos que llegaron por el formulario de la landing.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Prospectos</h1>
+          <p className="text-muted-foreground text-sm">
+            Contactos que llegaron por el formulario de la landing.
+          </p>
+        </div>
+        {/* El contador deja claro que la descarga respeta los filtros activos. */}
+        <Suspense fallback={<Skeleton className="h-9 w-44" />}>
+          <ExportButton total={total} />
+        </Suspense>
       </div>
 
       <ProspectStatsCards stats={stats} />

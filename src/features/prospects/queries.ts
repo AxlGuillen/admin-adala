@@ -1,14 +1,16 @@
 import "server-only";
 
-import { createClient } from "@/lib/supabase/server";
-import type { Tables } from "@/lib/supabase/database.types";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { PAGE_SIZE } from "./constants";
+import { createClient } from "@/lib/supabase/server";
+import type { Database, Tables } from "@/lib/supabase/database.types";
+
+import { EXPORT_LIMIT, PAGE_SIZE } from "./constants";
 import type { Period, ProspectsFilters } from "./search-params";
 
 export type Prospect = Tables<"adala_prospects">;
 
-function periodStartIso(periodo: Period): string | null {
+export function periodStartIso(periodo: Period): string | null {
   if (periodo === "todo") return null;
   const days = { "7d": 7, "30d": 30, "90d": 90 }[periodo];
   const since = new Date();
@@ -17,7 +19,7 @@ function periodStartIso(periodo: Period): string | null {
 }
 
 /**
- * PostgREST usa comas, parentesis y punto como sintaxis dentro de `.or()`.
+ * PostgREST usa comas, parentesis y asteriscos como sintaxis dentro de `.or()`.
  * Si el usuario los teclea en el buscador, el filtro se rompe (o peor, cambia
  * de significado), asi que los quitamos antes de armar la expresion.
  */
@@ -25,16 +27,20 @@ function sanitizeSearch(value: string) {
   return value.replace(/[,()*\\%]/g, " ").trim().slice(0, 80);
 }
 
-export async function listProspects(filters: ProspectsFilters) {
-  const supabase = await createClient();
-  const page = Math.max(1, filters.pagina);
-  const offset = (page - 1) * PAGE_SIZE;
-
+/**
+ * Consulta base con los filtros aplicados, sin paginar.
+ *
+ * La comparten el listado y la exportacion a Excel a proposito: si divergieran,
+ * el archivo descargado no coincidiria con lo que el usuario ve en pantalla.
+ */
+function filteredProspectsQuery(
+  supabase: SupabaseClient<Database>,
+  filters: ProspectsFilters,
+) {
   let query = supabase
     .from("adala_prospects")
     .select("*", { count: "exact" })
-    .order("created_at", { ascending: false })
-    .range(offset, offset + PAGE_SIZE - 1);
+    .order("created_at", { ascending: false });
 
   const since = periodStartIso(filters.periodo);
   if (since) query = query.gte("created_at", since);
@@ -57,7 +63,19 @@ export async function listProspects(filters: ProspectsFilters) {
     );
   }
 
-  const { data, count, error } = await query;
+  return query;
+}
+
+export async function listProspects(filters: ProspectsFilters) {
+  const supabase = await createClient();
+  const page = Math.max(1, filters.pagina);
+  const offset = (page - 1) * PAGE_SIZE;
+
+  const { data, count, error } = await filteredProspectsQuery(
+    supabase,
+    filters,
+  ).range(offset, offset + PAGE_SIZE - 1);
+
   if (error) {
     throw new Error(`No se pudieron cargar los prospectos: ${error.message}`);
   }
@@ -68,6 +86,32 @@ export async function listProspects(filters: ProspectsFilters) {
     total,
     page,
     pageCount: Math.max(1, Math.ceil(total / PAGE_SIZE)),
+  };
+}
+
+/**
+ * Todas las filas que cumplen los filtros, para exportar.
+ *
+ * `truncated` avisa si se alcanzo el tope: el archivo no debe decir que trae
+ * todo cuando no es cierto.
+ */
+export async function listProspectsForExport(filters: ProspectsFilters) {
+  const supabase = await createClient();
+
+  const { data, count, error } = await filteredProspectsQuery(
+    supabase,
+    filters,
+  ).range(0, EXPORT_LIMIT - 1);
+
+  if (error) {
+    throw new Error(`No se pudo exportar: ${error.message}`);
+  }
+
+  const total = count ?? 0;
+  return {
+    prospects: data ?? [],
+    total,
+    truncated: total > EXPORT_LIMIT,
   };
 }
 

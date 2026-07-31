@@ -49,7 +49,11 @@ src/
 
 **Regla principal:** un modulo = una carpeta en `src/features/` + una ruta en
 `src/app/(dashboard)/`. Nada que pertenezca a un modulo se guarda fuera de su
-carpeta, y ningun modulo importa de `components/` de otro.
+carpeta, y **ningun modulo importa componentes de otro**. Catalogos y tipos si
+se comparten: `overview` reusa `serviceLabel` y el tipo `Prospect` de
+`prospects` porque son vocabulario del dominio, no UI.
+
+Modulos actuales: `overview` (ruta `/`) y `prospects` (ruta `/prospectos`).
 
 ## Receta para agregar un modulo
 
@@ -67,7 +71,13 @@ carpeta, y ningun modulo importa de `components/` de otro.
 - **Leer datos = Server Component.** Nada de `useEffect` + `fetch`. El cliente
   solo se usa para interaccion (filtros, sheets, formularios).
 - **No hay Route Handlers para el CRUD propio.** Usa Server Actions. `app/api/`
-  se reserva para webhooks o cosas que consuma un tercero.
+  se reserva para webhooks, cosas que consuma un tercero y **descargas de
+  archivos** (una Server Action no puede devolver un attachment). El handler se
+  queda delgado: la logica del archivo vive en el feature, como
+  `src/features/prospects/excel.ts`.
+- **Un endpoint bajo `/api/` responde 401, nunca redirige.** Lo hace el proxy.
+  Si redirigiera, un `<a download>` con la sesion vencida guardaria el HTML del
+  login con la extension del archivo.
 - **El estado de listas va en la URL** con nuqs, no en `useState`. Asi un filtro
   se puede compartir por link y sobrevive al refresh.
 - **`requireAdmin()` en cada layout protegido.** El proxy solo refresca la
@@ -78,6 +88,14 @@ carpeta, y ningun modulo importa de `components/` de otro.
 - **Los `<Row>` de detalle y las etiquetas van en espanol sin acentos** en el
   codigo fuente (los datos si llevan acentos, es solo para evitar problemas de
   encoding en identificadores).
+- **Las graficas usan `PROSPECTS_CHART_CONFIG`** (un solo color de serie, con
+  su paso claro y oscuro ya validados contra las superficies de la app). Cada
+  grafica muestra una sola medida, asi que el color no codifica identidad: no
+  pintes las barras con un degradado por tamano ni metas una paleta categorica
+  sin necesidad. El texto de ejes y etiquetas va en `--muted-foreground`, nunca
+  en el color de la serie.
+- **Fechas al usuario en `America/Mexico_City`.** `created_at` se guarda en UTC;
+  el Excel y los desgloses por dia convierten explicitamente.
 
 ## Base de datos
 

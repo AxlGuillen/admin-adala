@@ -24,3 +24,6 @@ export function serviceLabel(value: string) {
 }
 
 export const PAGE_SIZE = 25;
+
+/** Tope de filas por descarga de Excel. Si se alcanza, el archivo lo declara. */
+export const EXPORT_LIMIT = 5000;
