@@ -35,16 +35,6 @@ const COLUMNS = [
   { header: "Ciudad", key: "ciudad", width: 20 },
   { header: "Servicio", key: "servicio", width: 24 },
   { header: "Detalle", key: "detalle", width: 40 },
-  { header: "Acepta marketing", key: "marketing", width: 16 },
-  { header: "Origen", key: "utmSource", width: 16 },
-  { header: "Medio", key: "utmMedium", width: 16 },
-  { header: "Campana", key: "utmCampaign", width: 26 },
-  { header: "Contenido", key: "utmContent", width: 22 },
-  // Columnas vacias para que el equipo lleve el seguimiento a mano mientras el
-  // modulo de seguimiento no existe.
-  { header: "Estatus", key: "estatus", width: 16 },
-  { header: "Responsable", key: "responsable", width: 18 },
-  { header: "Notas", key: "notas", width: 44 },
 ];
 
 export type ExportMeta = {
@@ -81,14 +71,6 @@ export async function buildProspectsWorkbook(
       ciudad: prospect.city,
       servicio: serviceLabel(prospect.service_type),
       detalle: prospect.other_description ?? "",
-      marketing: prospect.accepts_marketing ? "Si" : "No",
-      utmSource: prospect.utm_source ?? "",
-      utmMedium: prospect.utm_medium ?? "",
-      utmCampaign: prospect.utm_campaign ?? "",
-      utmContent: prospect.utm_content ?? "",
-      estatus: "",
-      responsable: "",
-      notas: "",
     });
   }
 
