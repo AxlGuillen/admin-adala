@@ -5,10 +5,15 @@ de la landing de adala.mx desde campanas de Facebook.
 
 ## Arrancar
 
+El gestor de paquetes es **bun**. El lockfile del repo es `bun.lock`; no hay
+`package-lock.json` a proposito, porque dos lockfiles derivan en arboles de
+dependencias distintos entre tu maquina y el deploy (Vercel elige el gestor
+segun cual lockfile encuentra).
+
 ```bash
-npm install
+bun install
 cp .env.example .env.local   # y llena los valores
-npm run dev
+bun run dev
 ```
 
 Abre http://localhost:3000 — te manda a `/login`.
@@ -55,8 +60,8 @@ cambios a un agente, ese archivo es el contrato.
   estado y periodo, panel de detalle con UTMs y consentimientos, y descarga a
   Excel de todo lo que cumple los filtros activos.
 
-El Excel trae columnas vacias de Estatus, Responsable y Notas para que el equipo
-lleve el seguimiento a mano mientras ese modulo no existe, y una hoja `Info` con
-los filtros que se aplicaron.
+El Excel trae solo los datos de contacto (fecha, nombre, telefono, email,
+estado, ciudad, servicio, detalle) para que el equipo lo trabaje a mano, mas
+una hoja `Info` con los filtros que se aplicaron.
 
 Siguiente: control de seguimiento (estatus, asignacion, notas y bitacora).

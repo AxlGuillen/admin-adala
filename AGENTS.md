@@ -64,7 +64,7 @@ Modulos actuales: `overview` (ruta `/`) y `prospects` (ruta `/prospectos`).
 4. Ruta en `src/app/(dashboard)/<modulo>/page.tsx` (Server Component que llama
    a las queries y pasa datos por props).
 5. Entrada nueva en `NAV_ITEMS` de `src/components/app-sidebar.tsx`.
-6. Si tocaste la base: `npm run db:types`.
+6. Si tocaste la base: `bun run db:types`.
 
 ## Reglas que no se rompen
 
@@ -117,16 +117,19 @@ Tablas actuales:
   usan las policies.
 
 Los tipos de `src/lib/supabase/database.types.ts` son **generados**. No se
-editan a mano; se corren con `npm run db:types` (requiere `npx supabase login`).
+editan a mano; se corren con `bun run db:types` (requiere `bunx supabase login`).
 
 ## Comandos
 
+El gestor de paquetes es **bun**. El unico lockfile es `bun.lock`: nunca
+generes `package-lock.json` ni `pnpm-lock.yaml` en este repo.
+
 ```bash
-npm run dev        # servidor de desarrollo
-npm run build      # build de produccion
-npm run typecheck  # tsc --noEmit
-npm run lint       # eslint
-npm run db:types   # regenera los tipos desde Supabase
+bun install        # instalar dependencias
+bun run dev        # servidor de desarrollo
+bun run build      # build de produccion
+bun run check      # typecheck + lint (lo mismo que corre CI)
+bun run db:types   # regenera los tipos desde Supabase
 ```
 
-Antes de dar por terminado un cambio: `npm run typecheck && npm run lint`.
+Antes de dar por terminado un cambio: `bun run check`.

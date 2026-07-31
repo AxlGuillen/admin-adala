@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
+    "check": "tsc --noEmit && eslint",
     "db:types": "supabase gen types typescript --project-id impscwgourdxhdejwkhe --schema public > src/lib/supabase/database.types.ts"
   },
   "dependencies": {
