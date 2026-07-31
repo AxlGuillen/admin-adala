@@ -11,8 +11,8 @@ const TREND_DAYS = 30;
  * Tope de filas que se traen para agregar en memoria.
  *
  * PostgREST no expone GROUP BY, asi que los desgloses se calculan en JS. Con el
- * volumen actual (decenas de filas) sobra de largo. Si esto se acerca al tope,
- * el paso siguiente es una vista o un RPC en Postgres, no subir el numero.
+ * volumen actual sobra de largo. Si esto se acerca al tope, el paso siguiente
+ * es una vista o un RPC en Postgres, no subir el numero.
  */
 const AGGREGATE_LIMIT = 10_000;
 
@@ -55,18 +55,32 @@ function topCounts(values: string[], limit: number) {
     .slice(0, limit);
 }
 
-export type TrendPoint = { dia: string; etiqueta: string; prospectos: number };
+export type TrendPoint = {
+  dia: string;
+  etiqueta: string;
+  prospectos: number;
+  /** Los ultimos 3 dias se resaltan en verde, como en el diseno. */
+  reciente: boolean;
+};
 export type BreakdownItem = { nombre: string; total: number };
 
 export type OverviewData = {
   total: number;
   hoy: number;
+  ultimaHora: number;
   ultimos7: number;
-  promedioDiario: number;
+  /** Diferencia de los ultimos 7 dias contra los 7 previos. */
+  delta7: number;
+  ultimos30: number;
+  /** Variacion porcentual de los ultimos 30 dias contra los 30 previos. */
+  delta30Pct: number | null;
   aceptanMarketing: number;
+  aceptanMarketingPct: number;
   trend: TrendPoint[];
+  ejeX: string[];
   porServicio: BreakdownItem[];
   porOrigen: BreakdownItem[];
+  topEstados: string[];
   recientes: Prospect[];
   /** true si se alcanzo AGGREGATE_LIMIT: los desgloses no cubren todo el historial. */
   desglosesParciales: boolean;
@@ -78,9 +92,10 @@ export async function getOverview(): Promise<OverviewData> {
   const [aggregate, recent] = await Promise.all([
     supabase
       .from("adala_prospects")
-      .select("created_at, service_type, utm_source, accepts_marketing", {
-        count: "exact",
-      })
+      .select(
+        "created_at, service_type, utm_source, accepts_marketing, state_mx",
+        { count: "exact" },
+      )
       .order("created_at", { ascending: false })
       .range(0, AGGREGATE_LIMIT - 1),
     supabase
@@ -91,9 +106,7 @@ export async function getOverview(): Promise<OverviewData> {
   ]);
 
   if (aggregate.error) {
-    throw new Error(
-      `No se pudo cargar el resumen: ${aggregate.error.message}`,
-    );
+    throw new Error(`No se pudo cargar el resumen: ${aggregate.error.message}`);
   }
   if (recent.error) {
     throw new Error(
@@ -105,8 +118,10 @@ export async function getOverview(): Promise<OverviewData> {
   const total = aggregate.count ?? rows.length;
 
   const dayKeys = lastDayKeys(TREND_DAYS);
+  const previousKeys = lastDayKeys(TREND_DAYS * 2).slice(0, TREND_DAYS);
   const todayKey = dayKeys[dayKeys.length - 1];
-  const sevenDaysKey = dayKeys[dayKeys.length - 7];
+  const sevenKey = dayKeys[dayKeys.length - 7];
+  const fourteenKey = dayKeys[dayKeys.length - 14];
 
   const byDay = new Map<string, number>();
   for (const row of rows) {
@@ -114,34 +129,65 @@ export async function getOverview(): Promise<OverviewData> {
     byDay.set(key, (byDay.get(key) ?? 0) + 1);
   }
 
-  const trend: TrendPoint[] = dayKeys.map((dia) => {
+  const trend: TrendPoint[] = dayKeys.map((dia, index) => {
     const [, month, day] = dia.split("-");
     return {
       dia,
       etiqueta: `${day}/${month}`,
       prospectos: byDay.get(dia) ?? 0,
+      reciente: index >= TREND_DAYS - 3,
     };
   });
 
-  const ultimos30 = trend.reduce((sum, point) => sum + point.prospectos, 0);
+  const sumKeys = (keys: string[]) =>
+    keys.reduce((sum, key) => sum + (byDay.get(key) ?? 0), 0);
+
+  const ultimos30 = sumKeys(dayKeys);
+  const previos30 = sumKeys(previousKeys);
+  // Las claves yyyy-mm-dd se comparan como texto sin ambiguedad.
+  const ultimos7 = rows.filter(
+    (row) => mexicoDayKey(row.created_at) >= sevenKey,
+  ).length;
+  const previos7 = rows.filter((row) => {
+    const key = mexicoDayKey(row.created_at);
+    return key >= fourteenKey && key < sevenKey;
+  }).length;
+
+  const unaHoraAtras = Date.now() - 3_600_000;
+  const aceptanMarketing = rows.filter((row) => row.accepts_marketing).length;
 
   return {
     total,
     hoy: byDay.get(todayKey) ?? 0,
-    // Las claves yyyy-mm-dd se comparan como texto sin ambiguedad.
-    ultimos7: rows.filter((row) => mexicoDayKey(row.created_at) >= sevenDaysKey)
-      .length,
-    promedioDiario: Math.round((ultimos30 / TREND_DAYS) * 10) / 10,
-    aceptanMarketing: rows.filter((row) => row.accepts_marketing).length,
+    ultimaHora: rows.filter(
+      (row) => new Date(row.created_at).getTime() >= unaHoraAtras,
+    ).length,
+    ultimos7,
+    delta7: ultimos7 - previos7,
+    ultimos30,
+    delta30Pct:
+      previos30 === 0
+        ? null
+        : Math.round(((ultimos30 - previos30) / previos30) * 100),
+    aceptanMarketing,
+    aceptanMarketingPct: rows.length
+      ? Math.round((aceptanMarketing / rows.length) * 100)
+      : 0,
     trend,
+    // Cinco marcas de fecha repartidas bajo la grafica.
+    ejeX: [0, 7, 14, 21, 29].map((index) => trend[index]?.etiqueta ?? ""),
     porServicio: topCounts(
       rows.map((row) => serviceLabel(row.service_type)),
-      8,
+      6,
     ),
     porOrigen: topCounts(
       rows.map((row) => row.utm_source ?? "Directo"),
       6,
     ),
+    topEstados: topCounts(
+      rows.map((row) => row.state_mx),
+      3,
+    ).map((item) => item.nombre),
     recientes: recent.data ?? [],
     desglosesParciales: total > AGGREGATE_LIMIT,
   };

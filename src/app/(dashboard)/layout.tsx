@@ -1,9 +1,5 @@
 import { AppSidebar } from "@/components/app-sidebar";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { getProspectCount } from "@/features/prospects/queries";
 import { requireAdmin } from "@/lib/auth";
 
 export default async function DashboardLayout({
@@ -14,19 +10,18 @@ export default async function DashboardLayout({
   // Unica puerta de acceso del panel: si el usuario no esta en la allowlist,
   // esto redirige antes de renderizar cualquier dato.
   const admin = await requireAdmin();
+  const prospectCount = await getProspectCount();
 
   return (
-    <SidebarProvider>
+    <div className="adala-mesh flex min-h-svh">
       <AppSidebar
         name={admin.profile.full_name ?? admin.email}
         email={admin.email}
+        prospectCount={prospectCount}
       />
-      <SidebarInset>
-        <header className="flex h-14 items-center gap-2 border-b px-4">
-          <SidebarTrigger />
-        </header>
-        <div className="flex-1 p-4 md:p-6">{children}</div>
-      </SidebarInset>
-    </SidebarProvider>
+      <main className="min-w-0 flex-1 px-4 pt-4 pb-6 md:px-6 md:pt-[22px] md:pb-[26px]">
+        {children}
+      </main>
+    </div>
   );
 }

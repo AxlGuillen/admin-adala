@@ -3,24 +3,6 @@
 import { useState } from "react";
 import { Inbox, MessageCircle } from "lucide-react";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   formatDateTime,
   formatPhone,
@@ -33,122 +15,116 @@ import { serviceLabel } from "../constants";
 import type { Prospect } from "../queries";
 import { ProspectDetailSheet } from "./prospect-detail-sheet";
 
+const TH =
+  "text-faint h-[34px] text-left font-mono text-[10px] font-medium tracking-[0.1em] uppercase border-b border-[var(--hairline)]";
+const TD = "py-2.5 border-b border-[var(--hairline-soft)]";
+
 export function ProspectsTable({ prospects }: { prospects: Prospect[] }) {
   const [selected, setSelected] = useState<Prospect | null>(null);
 
   if (prospects.length === 0) {
     return (
-      <Empty className="border-border rounded-lg border border-dashed">
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <Inbox />
-          </EmptyMedia>
-          <EmptyTitle>Sin prospectos</EmptyTitle>
-          <EmptyDescription>
-            No hay registros que coincidan con los filtros. Prueba ampliando el
-            periodo o limpiando la busqueda.
-          </EmptyDescription>
-        </EmptyHeader>
-      </Empty>
+      <div className="adala-glass flex flex-col items-center gap-2 rounded-2xl px-6 py-14 text-center">
+        <Inbox className="text-muted-foreground size-6" />
+        <p className="font-medium">Sin prospectos</p>
+        <p className="text-muted-foreground max-w-sm text-sm">
+          No hay registros que coincidan con los filtros. Prueba ampliando el
+          periodo o limpiando la busqueda.
+        </p>
+      </div>
     );
   }
 
   return (
     <>
-      <div className="rounded-lg border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Prospecto</TableHead>
-              <TableHead>Contacto</TableHead>
-              <TableHead className="hidden md:table-cell">Ubicacion</TableHead>
-              <TableHead>Servicio</TableHead>
-              <TableHead className="hidden lg:table-cell">Campana</TableHead>
-              <TableHead className="text-right">Recibido</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {prospects.map((prospect) => (
-              <TableRow
-                key={prospect.id}
-                onClick={() => setSelected(prospect)}
-                className="cursor-pointer"
-              >
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <Avatar className="size-8">
-                      <AvatarFallback className="text-xs">
+      <div className="adala-glass overflow-hidden rounded-2xl">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-[13px]">
+            <thead>
+              <tr>
+                <th className={`${TH} px-5`}>Prospecto</th>
+                <th className={`${TH} px-2`}>Contacto</th>
+                <th className={`${TH} hidden px-2 md:table-cell`}>Ubicacion</th>
+                <th className={`${TH} px-2`}>Servicio</th>
+                <th className={`${TH} hidden px-2 lg:table-cell`}>Campana</th>
+                <th className={`${TH} px-5 text-right`}>Recibido</th>
+              </tr>
+            </thead>
+            <tbody>
+              {prospects.map((prospect) => (
+                <tr
+                  key={prospect.id}
+                  onClick={() => setSelected(prospect)}
+                  className="cursor-pointer transition-colors hover:bg-white/45 dark:hover:bg-white/5"
+                >
+                  <td className={`${TD} px-5`}>
+                    <div className="flex items-center gap-2.5">
+                      <span
+                        className="flex size-[30px] shrink-0 items-center justify-center rounded-full text-[11px] font-semibold text-white"
+                        style={{
+                          background:
+                            "linear-gradient(140deg, #1c9ad6, #7ac143)",
+                        }}
+                      >
                         {initials(prospect.full_name)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="min-w-0">
-                      <p className="truncate font-medium">
-                        {prospect.full_name}
-                      </p>
-                      {prospect.email ? (
-                        <p className="text-muted-foreground truncate text-xs">
-                          {prospect.email}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="truncate font-medium">
+                          {prospect.full_name}
                         </p>
-                      ) : null}
+                        {prospect.email ? (
+                          <p className="text-faint truncate text-[11px]">
+                            {prospect.email}
+                          </p>
+                        ) : null}
+                      </div>
                     </div>
-                  </div>
-                </TableCell>
+                  </td>
 
-                <TableCell>
-                  <div className="flex items-center gap-1">
-                    <span className="tabular-nums">
-                      {formatPhone(prospect.phone)}
-                    </span>
-                    <Button
-                      asChild
-                      size="icon"
-                      variant="ghost"
-                      className="size-7"
-                      // El click no debe abrir tambien el panel de detalle.
-                      onClick={(event) => event.stopPropagation()}
-                    >
+                  <td className={`${TD} px-2`}>
+                    <div className="flex items-center gap-[7px]">
+                      <span className="font-mono text-xs whitespace-nowrap">
+                        {formatPhone(prospect.phone)}
+                      </span>
                       <a
                         href={whatsappUrl(prospect.phone)}
                         target="_blank"
                         rel="noopener noreferrer"
+                        // El click no debe abrir tambien el panel de detalle.
+                        onClick={(event) => event.stopPropagation()}
                         aria-label={`Escribir por WhatsApp a ${prospect.full_name}`}
+                        className="adala-texture flex size-[26px] shrink-0 items-center justify-center rounded-lg bg-[var(--brand-green-deep)] text-white"
                       >
-                        <MessageCircle />
+                        <MessageCircle className="size-3.5" />
                       </a>
-                    </Button>
-                  </div>
-                </TableCell>
+                    </div>
+                  </td>
 
-                <TableCell className="hidden md:table-cell">
-                  <span className="text-sm">
+                  <td className={`${TD} text-muted-foreground hidden px-2 md:table-cell`}>
                     {prospect.city}, {prospect.state_mx}
-                  </span>
-                </TableCell>
+                  </td>
 
-                <TableCell>
-                  <Badge variant="secondary">
-                    {serviceLabel(prospect.service_type)}
-                  </Badge>
-                </TableCell>
+                  <td className={`${TD} px-2`}>
+                    <span className="inline-flex h-[22px] items-center rounded-full bg-[var(--secondary)] px-2.5 text-[11.5px] font-medium whitespace-nowrap">
+                      {serviceLabel(prospect.service_type)}
+                    </span>
+                  </td>
 
-                <TableCell className="hidden lg:table-cell">
-                  <span className="text-muted-foreground text-sm">
+                  <td className={`${TD} text-muted-foreground hidden px-2 text-xs lg:table-cell`}>
                     {prospect.utm_campaign ?? prospect.utm_source ?? "Directo"}
-                  </span>
-                </TableCell>
+                  </td>
 
-                <TableCell className="text-right">
-                  <span
-                    className="text-muted-foreground text-sm"
+                  <td
+                    className={`${TD} text-muted-foreground px-5 text-right text-xs whitespace-nowrap`}
                     title={formatDateTime(prospect.created_at)}
                   >
                     {formatRelativeDate(prospect.created_at)}
-                  </span>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <ProspectDetailSheet

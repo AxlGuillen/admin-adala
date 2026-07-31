@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 
+import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 
 import "./globals.css";
@@ -38,12 +39,17 @@ export default function RootLayout({
   return (
     <html
       lang="es"
+      // suppressHydrationWarning: next-themes escribe la clase del tema en el
+      // cliente antes de hidratar, asi que el html difiere del render servidor.
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full">
-        {/* NuqsAdapter conecta los filtros de la URL con el router de Next. */}
-        <NuqsAdapter>{children}</NuqsAdapter>
-        <Toaster richColors position="top-right" />
+        <ThemeProvider>
+          {/* NuqsAdapter conecta los filtros de la URL con el router de Next. */}
+          <NuqsAdapter>{children}</NuqsAdapter>
+          <Toaster richColors position="top-right" />
+        </ThemeProvider>
       </body>
     </html>
   );

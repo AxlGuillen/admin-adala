@@ -1,33 +1,45 @@
 import { CalendarDays, Megaphone, TrendingUp, Users } from "lucide-react";
 
-import { Card, CardContent } from "@/components/ui/card";
-
 import type { ProspectStats } from "../queries";
 
-const CARDS = [
-  { key: "total", label: "Prospectos totales", icon: Users },
-  { key: "ultimos7", label: "Ultimos 7 dias", icon: TrendingUp },
-  { key: "hoy", label: "Hoy", icon: CalendarDays },
-  { key: "conMarketing", label: "Aceptan marketing", icon: Megaphone },
-] as const;
+const VALUE = "mt-3 text-[38px] leading-none font-semibold tracking-[-0.035em]";
 
 export function ProspectStatsCards({ stats }: { stats: ProspectStats }) {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      {CARDS.map(({ key, label, icon: Icon }) => (
-        <Card key={key}>
-          <CardContent className="flex items-center justify-between gap-4">
-            <div className="space-y-1">
-              <p className="text-muted-foreground text-sm">{label}</p>
-              {/* Cifras proporcionales: tabular-nums solo en columnas. */}
-              <p className="text-3xl font-semibold">
-                {stats[key].toLocaleString("es-MX")}
-              </p>
-            </div>
-            <Icon className="text-muted-foreground size-5 shrink-0" />
-          </CardContent>
-        </Card>
-      ))}
+    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="adala-tile rounded-2xl p-4">
+        <div className="flex items-center justify-between">
+          <span className="adala-eyebrow">Prospectos totales</span>
+          <Users className="size-[17px]" />
+        </div>
+        <p className={VALUE}>{stats.total.toLocaleString("es-MX")}</p>
+      </div>
+
+      <div className="adala-glass rounded-2xl p-4">
+        <div className="flex items-center justify-between">
+          <span className="adala-eyebrow text-muted-foreground">
+            Ultimos 7 dias
+          </span>
+          <TrendingUp className="text-brand-blue-deep size-[17px]" />
+        </div>
+        <p className={VALUE}>{stats.ultimos7.toLocaleString("es-MX")}</p>
+      </div>
+
+      <div className="adala-glass rounded-2xl p-4">
+        <div className="flex items-center justify-between">
+          <span className="adala-eyebrow text-muted-foreground">Hoy</span>
+          <CalendarDays className="text-brand-blue-deep size-[17px]" />
+        </div>
+        <p className={VALUE}>{stats.hoy.toLocaleString("es-MX")}</p>
+      </div>
+
+      <div className="adala-ink rounded-2xl p-4">
+        <div className="flex items-center justify-between">
+          <span className="adala-eyebrow text-[#9db6c8]">Aceptan marketing</span>
+          <Megaphone className="size-[17px] text-[#8fd14f]" />
+        </div>
+        <p className={VALUE}>{stats.conMarketing.toLocaleString("es-MX")}</p>
+      </div>
     </div>
   );
 }

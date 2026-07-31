@@ -4,12 +4,33 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+  Lenguaje visual "tinta sobre vidrio" (propuesta 2a del diseno):
+  malla azul -> verde de fondo, tarjetas de vidrio, superficies de tinta con
+  trama diagonal y una sola tarjeta llena por pantalla.
+
+  Los tokens de shadcn se remapean a esta paleta para que los primitivos
+  (Button, Badge, Table, Input) hereden el lenguaje sin tener que pasar
+  className en cada uso.
+*/
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-geist-sans);
+
+  /* Paleta Adala, disponible como utilidades (bg-ink, text-brand-blue, ...) */
+  --color-ink: var(--ink);
+  --color-ink-foreground: var(--ink-foreground);
+  --color-ink-muted: var(--ink-muted);
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-blue-deep: var(--brand-blue-deep);
+  --color-brand-green: var(--brand-green);
+  --color-brand-green-deep: var(--brand-green-deep);
+  --color-faint: var(--faint);
+
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -39,82 +60,148 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  /*
+    Escala fijada a los radios del diseno, no derivada de --radius con
+    multiplicadores: ahi los tres tamanos que importan son 12 (controles),
+    16 (tarjetas) y 20 (contenedor exterior), y una escala proporcional no
+    cae en esos numeros.
+  */
+  --radius-sm: 0.375rem; /* 6px */
+  --radius-md: 0.5rem; /* 8px  - chips y botones chicos */
+  --radius-lg: 0.625rem; /* 10px - campos de la barra de filtros */
+  --radius-xl: 0.75rem; /* 12px - botones y elementos de navegacion */
+  --radius-2xl: 1rem; /* 16px - tarjetas */
+  --radius-3xl: 1.25rem; /* 20px - sidebar y tarjeta de login */
+  --radius-4xl: 1.5rem;
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --ink: #0d2233;
+  --ink-foreground: #dbe8f1;
+  --ink-muted: #6d8ba1;
+  --brand-blue: #1c9ad6;
+  --brand-blue-deep: #1585c4;
+  --brand-green: #7ac143;
+  --brand-green-deep: #6bb42f;
+  --faint: #8ba4b5;
+
+  /* Superficies del lenguaje */
+  --page: #eef4f8;
+  --glass: rgba(255, 255, 255, 0.74);
+  --glass-strong: rgba(255, 255, 255, 0.78);
+  --glass-soft: rgba(255, 255, 255, 0.62);
+  --glass-field: rgba(255, 255, 255, 0.92);
+  --hairline: rgba(13, 34, 51, 0.09);
+  --hairline-soft: rgba(13, 34, 51, 0.06);
+  --texture-line: rgba(255, 255, 255, 0.03);
+  --accent-gradient: linear-gradient(100deg, #1c9ad6 0%, #7ac143 100%);
+  --accent-gradient-on: #ffffff;
+  --tile-gradient: linear-gradient(120deg, #1585c4 0%, #1c9ad6 45%, #7ac143 100%);
+  --glass-ring:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.65),
+    0 16px 28px -22px rgba(13, 34, 51, 0.7);
+  --ink-ring:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+    0 16px 28px -20px rgba(13, 34, 51, 0.95);
+
+  --background: var(--page);
+  --foreground: #0d2233;
+  --card: var(--glass);
+  --card-foreground: #0d2233;
+  --popover: #ffffff;
+  --popover-foreground: #0d2233;
+  --primary: #0d2233;
+  --primary-foreground: #ffffff;
+  --secondary: rgba(28, 154, 214, 0.14);
+  --secondary-foreground: #0d2233;
+  --muted: rgba(13, 34, 51, 0.06);
+  --muted-foreground: #5c7285;
+  --accent: rgba(13, 34, 51, 0.06);
+  --accent-foreground: #0d2233;
+  --destructive: #d03b3b;
+  --border: var(--hairline);
+  --input: rgba(13, 34, 51, 0.12);
+  --ring: rgba(28, 154, 214, 0.6);
+  --chart-1: #1585c4;
+  --chart-2: #7ac143;
+  --chart-3: #0d2233;
+  --chart-4: #6d8ba1;
+  --chart-5: #b8ccd9;
+  /* Base para los componentes de shadcn que calculan a partir de var(--radius). */
+  --radius: 0.75rem;
+  --sidebar: var(--ink);
+  --sidebar-foreground: var(--ink-foreground);
+  --sidebar-primary: var(--brand-blue);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(255, 255, 255, 0.06);
+  --sidebar-accent-foreground: var(--ink-foreground);
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: rgba(53, 179, 234, 0.6);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --ink: #071523;
+  --ink-foreground: #dbe8f1;
+  --ink-muted: #63809a;
+  --brand-blue: #35b3ea;
+  --brand-blue-deep: #1585c4;
+  --brand-green: #8fd14f;
+  --brand-green-deep: #6bb42f;
+  --faint: #7b96aa;
+
+  --page: #06101a;
+  --glass: rgba(255, 255, 255, 0.06);
+  --glass-strong: rgba(255, 255, 255, 0.07);
+  --glass-soft: rgba(255, 255, 255, 0.05);
+  --glass-field: rgba(255, 255, 255, 0.05);
+  --hairline: rgba(255, 255, 255, 0.09);
+  --hairline-soft: rgba(255, 255, 255, 0.06);
+  --texture-line: rgba(255, 255, 255, 0.028);
+  --accent-gradient: linear-gradient(100deg, #35b3ea 0%, #8fd14f 100%);
+  --accent-gradient-on: #04121c;
+  --tile-gradient: linear-gradient(120deg, #1585c4 0%, #1c9ad6 45%, #7ac143 100%);
+  --glass-ring:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.09),
+    0 16px 28px -22px rgba(0, 0, 0, 0.95);
+  --ink-ring:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+    0 16px 28px -20px rgba(0, 0, 0, 0.9);
+
+  --background: var(--page);
+  --foreground: #e2ecf3;
+  --card: var(--glass);
+  --card-foreground: #e2ecf3;
+  --popover: #0f1f2e;
+  --popover-foreground: #e2ecf3;
+  --primary: #35b3ea;
+  --primary-foreground: #04121c;
+  --secondary: rgba(53, 179, 234, 0.18);
+  --secondary-foreground: #e2ecf3;
+  --muted: rgba(255, 255, 255, 0.06);
+  --muted-foreground: #9db6c8;
+  --accent: rgba(255, 255, 255, 0.06);
+  --accent-foreground: #e2ecf3;
+  --destructive: #e66767;
+  --border: var(--hairline);
+  --input: rgba(255, 255, 255, 0.12);
+  --ring: rgba(53, 179, 234, 0.6);
+  --chart-1: #35b3ea;
+  --chart-2: #8fd14f;
+  --chart-3: #9db6c8;
+  --chart-4: #63809a;
+  --chart-5: #3c556b;
+  --sidebar: var(--ink);
+  --sidebar-foreground: var(--ink-foreground);
+  --sidebar-primary: var(--brand-blue);
+  --sidebar-primary-foreground: #04121c;
+  --sidebar-accent: rgba(255, 255, 255, 0.06);
+  --sidebar-accent-foreground: var(--ink-foreground);
+  --sidebar-border: rgba(255, 255, 255, 0.06);
+  --sidebar-ring: rgba(53, 179, 234, 0.6);
 }
 
 @layer base {
@@ -126,5 +213,119 @@
   }
   html {
     @apply font-sans;
+  }
+
+  /*
+    Las Card de shadcn traen borde y sombra planos. Aqui una tarjeta es vidrio:
+    sin borde, con anillo interior y desenfoque de fondo.
+  */
+  [data-slot="card"] {
+    border: 0;
+    background: var(--glass);
+    backdrop-filter: blur(18px);
+    box-shadow: var(--glass-ring);
+  }
+}
+
+@layer utilities {
+  /* Malla azul -> verde del fondo de pagina. */
+  .adala-mesh {
+    background-color: var(--page);
+    background-image:
+      radial-gradient(760px 420px at 6% -10%, rgba(28, 154, 214, 0.32), transparent 62%),
+      radial-gradient(680px 420px at 98% 2%, rgba(122, 193, 67, 0.3), transparent 60%),
+      radial-gradient(700px 520px at 55% 110%, rgba(28, 154, 214, 0.14), transparent 60%);
+    background-attachment: fixed;
+  }
+  .dark .adala-mesh {
+    background-image:
+      radial-gradient(760px 420px at 6% -10%, rgba(28, 154, 214, 0.3), transparent 62%),
+      radial-gradient(680px 420px at 98% 2%, rgba(122, 193, 67, 0.22), transparent 60%),
+      radial-gradient(700px 520px at 55% 110%, rgba(28, 154, 214, 0.12), transparent 60%);
+  }
+
+  /* Malla del login: agrega la trama diagonal fina sobre toda la pantalla. */
+  .adala-mesh-auth {
+    background-color: var(--page);
+    background-image:
+      radial-gradient(620px 380px at 10% -6%, rgba(28, 154, 214, 0.34), transparent 62%),
+      radial-gradient(560px 360px at 96% 4%, rgba(122, 193, 67, 0.32), transparent 60%),
+      radial-gradient(600px 460px at 55% 112%, rgba(28, 154, 214, 0.16), transparent 60%),
+      repeating-linear-gradient(135deg, rgba(13, 34, 51, 0.022) 0 1px, transparent 1px 9px);
+  }
+  .dark .adala-mesh-auth {
+    background-image:
+      radial-gradient(620px 380px at 10% -6%, rgba(28, 154, 214, 0.3), transparent 62%),
+      radial-gradient(560px 360px at 96% 4%, rgba(122, 193, 67, 0.22), transparent 60%),
+      radial-gradient(600px 460px at 55% 112%, rgba(28, 154, 214, 0.14), transparent 60%),
+      repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 9px);
+  }
+
+  /* Tarjeta de vidrio. */
+  .adala-glass {
+    background: var(--glass);
+    backdrop-filter: blur(18px);
+    box-shadow: var(--glass-ring);
+  }
+  .adala-glass-soft {
+    background: var(--glass-soft);
+    backdrop-filter: blur(18px);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+  }
+  .dark .adala-glass-soft {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+  }
+
+  /* Superficie de tinta con trama diagonal: sidebar y la tarjeta llena. */
+  .adala-ink {
+    color: var(--ink-foreground);
+    background-color: var(--ink);
+    background-image: repeating-linear-gradient(
+      135deg,
+      var(--texture-line) 0 1px,
+      transparent 1px 8px
+    );
+    box-shadow: var(--ink-ring);
+  }
+
+  /* Solo la trama, para pintarla encima de otro relleno (barras, tarjeta llena). */
+  .adala-texture {
+    background-image: repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.16) 0 1px,
+      transparent 1px 5px
+    );
+  }
+
+  /* Degradado de marca para botones y la tarjeta llena. */
+  .adala-accent {
+    color: var(--accent-gradient-on);
+    background: var(--accent-gradient);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.35) inset,
+      0 10px 20px -10px rgba(28, 154, 214, 0.95);
+  }
+  .adala-tile {
+    color: #ffffff;
+    background-color: var(--brand-blue);
+    background-image:
+      var(--tile-gradient),
+      repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 8px);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.3) inset,
+      0 16px 28px -18px rgba(21, 133, 196, 0.95);
+  }
+
+  /* Etiqueta monoespaciada en versalitas que el diseno usa en toda la UI. */
+  .adala-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
   }
 }

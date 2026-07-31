@@ -30,23 +30,25 @@ export default async function ProspectosPage({ searchParams }: PageProps) {
     ]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
+    <div className="flex flex-col gap-3.5">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Prospectos</h1>
-          <p className="text-muted-foreground text-sm">
-            Contactos que llegaron por el formulario de la landing.
+          <h1 className="text-[27px] leading-tight font-semibold tracking-[-0.025em]">
+            Prospectos
+          </h1>
+          <p className="text-muted-foreground mt-[3px] text-[13px]">
+            Contactos que llegaron por el formulario de la landing
           </p>
         </div>
         {/* El contador deja claro que la descarga respeta los filtros activos. */}
-        <Suspense fallback={<Skeleton className="h-9 w-44" />}>
+        <Suspense fallback={<Skeleton className="h-[38px] w-48 rounded-xl" />}>
           <ExportButton total={total} />
         </Suspense>
       </div>
 
       <ProspectStatsCards stats={stats} />
 
-      <Suspense fallback={<Skeleton className="h-10 w-full" />}>
+      <Suspense fallback={<Skeleton className="h-14 w-full rounded-2xl" />}>
         <ProspectsFilters states={states} />
       </Suspense>
 

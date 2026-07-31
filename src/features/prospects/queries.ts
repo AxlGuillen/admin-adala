@@ -115,6 +115,15 @@ export async function listProspectsForExport(filters: ProspectsFilters) {
   };
 }
 
+/** Total de prospectos, para el contador del sidebar. */
+export async function getProspectCount(): Promise<number> {
+  const supabase = await createClient();
+  const { count } = await supabase
+    .from("adala_prospects")
+    .select("*", { count: "exact", head: true });
+  return count ?? 0;
+}
+
 export type ProspectStats = {
   total: number;
   ultimos7: number;

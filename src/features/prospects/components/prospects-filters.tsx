@@ -4,8 +4,6 @@ import { useTransition } from "react";
 import { debounce, useQueryStates } from "nuqs";
 import { Search, X } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -14,9 +12,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
+import { cn } from "@/lib/utils";
 
 import { SERVICE_TYPES, SERVICE_TYPE_VALUES } from "../constants";
 import { PERIOD_LABELS, PERIODS, prospectsFilters } from "../search-params";
+
+/** Control del diseno: 36px de alto, esquina de 10px y anillo interior. */
+const CONTROL =
+  "h-9 rounded-[10px] bg-[var(--glass-field)] px-3 text-[13px] shadow-[inset_0_0_0_1px_var(--hairline)] border-0 focus-visible:ring-2 focus-visible:ring-[var(--ring)]";
 
 export function ProspectsFilters({ states }: { states: string[] }) {
   const [isPending, startTransition] = useTransition();
@@ -39,10 +42,10 @@ export function ProspectsFilters({ states }: { states: string[] }) {
     filters.periodo !== "todo";
 
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-      <div className="relative w-full sm:max-w-xs">
-        <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
-        <Input
+    <div className="adala-glass-soft flex flex-wrap items-center gap-2.5 rounded-2xl p-2.5">
+      <div className="relative min-w-[220px] flex-1">
+        <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-[15px] -translate-y-1/2" />
+        <input
           value={filters.q}
           // Sin debounce, cada tecla dispara una consulta a Supabase.
           onChange={(event) =>
@@ -52,8 +55,8 @@ export function ProspectsFilters({ states }: { states: string[] }) {
             )
           }
           placeholder="Nombre, telefono, email o ciudad"
-          className="pl-9"
           aria-label="Buscar prospectos"
+          className={cn(CONTROL, "w-full pl-9 outline-none")}
         />
       </div>
 
@@ -61,7 +64,10 @@ export function ProspectsFilters({ states }: { states: string[] }) {
         value={filters.servicio}
         onValueChange={(value) => update({ servicio: value })}
       >
-        <SelectTrigger className="w-full sm:w-52" aria-label="Filtrar por servicio">
+        <SelectTrigger
+          className={cn(CONTROL, "w-full sm:w-[190px]")}
+          aria-label="Filtrar por servicio"
+        >
           <SelectValue placeholder="Servicio" />
         </SelectTrigger>
         <SelectContent>
@@ -78,7 +84,10 @@ export function ProspectsFilters({ states }: { states: string[] }) {
         value={filters.estado}
         onValueChange={(value) => update({ estado: value })}
       >
-        <SelectTrigger className="w-full sm:w-48" aria-label="Filtrar por estado">
+        <SelectTrigger
+          className={cn(CONTROL, "w-full sm:w-[170px]")}
+          aria-label="Filtrar por estado"
+        >
           <SelectValue placeholder="Estado" />
         </SelectTrigger>
         <SelectContent>
@@ -97,7 +106,15 @@ export function ProspectsFilters({ states }: { states: string[] }) {
           update({ periodo: value as (typeof PERIODS)[number] })
         }
       >
-        <SelectTrigger className="w-full sm:w-44" aria-label="Filtrar por periodo">
+        <SelectTrigger
+          // El periodo activo va en tinta: es el filtro que siempre esta puesto.
+          className={cn(
+            CONTROL,
+            "w-full font-medium sm:w-[165px]",
+            "bg-[var(--ink)] text-[var(--ink-foreground)] shadow-none",
+          )}
+          aria-label="Filtrar por periodo"
+        >
           <SelectValue placeholder="Periodo" />
         </SelectTrigger>
         <SelectContent>
@@ -110,8 +127,8 @@ export function ProspectsFilters({ states }: { states: string[] }) {
       </Select>
 
       {hasFilters ? (
-        <Button
-          variant="ghost"
+        <button
+          type="button"
           onClick={() =>
             setFilters({
               q: "",
@@ -121,12 +138,16 @@ export function ProspectsFilters({ states }: { states: string[] }) {
               pagina: 1,
             })
           }
+          className="text-muted-foreground hover:text-foreground flex h-9 items-center gap-1.5 rounded-[10px] px-3 text-[13px] transition-colors"
         >
-          <X /> Limpiar
-        </Button>
+          <X className="size-3.5" />
+          Limpiar
+        </button>
       ) : null}
 
-      {isPending ? <Spinner className="text-muted-foreground size-4" /> : null}
+      {isPending ? (
+        <Spinner className="text-muted-foreground size-4" />
+      ) : null}
     </div>
   );
 }
