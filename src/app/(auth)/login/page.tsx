@@ -3,6 +3,7 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import { ShieldCheck } from "lucide-react";
 
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { LoginForm } from "./login-form";
@@ -13,6 +14,7 @@ export const metadata: Metadata = { title: "Entrar" };
 export default function LoginPage() {
   return (
     <main className="adala-mesh-auth flex min-h-svh items-center justify-center p-6">
+      <ThemeToggle className="text-muted-foreground hover:text-foreground fixed top-4 right-4 hover:bg-[rgba(13,34,51,0.06)] dark:hover:bg-white/8" />
       <div className="flex w-full max-w-[396px] flex-col gap-3.5">
         <div className="adala-glass rounded-[20px] p-[26px]">
           <div className="flex items-center gap-3">

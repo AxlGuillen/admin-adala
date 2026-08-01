@@ -204,6 +204,17 @@
   --sidebar-ring: rgba(53, 179, 234, 0.6);
 }
 
+/*
+  El cambio de tema anima su propia "gota" (un clip-path circular sobre
+  ::view-transition-new desde el boton del toggle). Se apaga el crossfade
+  default de la View Transitions API para que no se mezcle con ella.
+*/
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

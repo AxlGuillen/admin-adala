@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { logout } from "@/app/(auth)/login/actions";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { initials } from "@/lib/format";
@@ -59,6 +60,7 @@ function SidebarBody({ name, email, prospectCount, onNavigate }: SidebarProps & 
           priority
         />
         <span className="text-base font-semibold tracking-[0.05em]">ADALA</span>
+        <ThemeToggle className="text-ink-muted ml-auto hover:bg-white/6 hover:text-[var(--ink-foreground)]" />
       </div>
 
       <div className="flex flex-col gap-1">

@@ -2,6 +2,8 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import { ShieldAlert } from "lucide-react";
 
+import { ThemeToggle } from "@/components/theme-toggle";
+
 import { logout } from "../login/actions";
 
 export const metadata: Metadata = { title: "Sin acceso" };
@@ -9,6 +11,7 @@ export const metadata: Metadata = { title: "Sin acceso" };
 export default function SinAccesoPage() {
   return (
     <main className="adala-mesh-auth flex min-h-svh items-center justify-center p-6">
+      <ThemeToggle className="text-muted-foreground hover:text-foreground fixed top-4 right-4 hover:bg-[rgba(13,34,51,0.06)] dark:hover:bg-white/8" />
       <div className="flex w-full max-w-[396px] flex-col gap-3.5">
         <div className="adala-glass rounded-[20px] p-[26px]">
           <div className="flex items-center gap-3">
