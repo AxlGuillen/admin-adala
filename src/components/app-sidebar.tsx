@@ -4,14 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Download,
-  LayoutDashboard,
-  LogOut,
-  Menu,
-  Search,
-  Users,
-} from "lucide-react";
+import { LayoutDashboard, LogOut, Menu, Users } from "lucide-react";
 
 import { logout } from "@/app/(auth)/login/actions";
 import { Button } from "@/components/ui/button";
@@ -26,16 +19,6 @@ import { cn } from "@/lib/utils";
 const MODULES = [
   { href: "/", label: "Resumen", icon: LayoutDashboard },
   { href: "/prospectos", label: "Prospectos", icon: Users },
-] as const;
-
-const ACTIONS = [
-  { href: "/prospectos", label: "Buscar prospecto", icon: Search, download: false },
-  {
-    href: "/api/prospectos/export",
-    label: "Descargar Excel",
-    icon: Download,
-    download: true,
-  },
 ] as const;
 
 type SidebarProps = {
@@ -61,7 +44,7 @@ function SidebarBody({ name, email, prospectCount, onNavigate }: SidebarProps & 
     <>
       <div className="flex items-center gap-2.5 px-2 py-1">
         <Image
-          src="/adala-logo.png"
+          src="/app-logo.png"
           alt=""
           width={32}
           height={32}
@@ -110,22 +93,6 @@ function SidebarBody({ name, email, prospectCount, onNavigate }: SidebarProps & 
         })}
       </div>
 
-      <div className="flex flex-col gap-1">
-        <GroupLabel>Acciones</GroupLabel>
-        {ACTIONS.map((item) => (
-          <a
-            key={item.label}
-            href={item.href}
-            download={item.download || undefined}
-            onClick={onNavigate}
-            className="flex h-[42px] items-center gap-2.5 rounded-xl px-3 text-sm text-[#9db6c8] transition-colors hover:bg-white/6 hover:text-[var(--ink-foreground)]"
-          >
-            <item.icon className="size-[17px]" />
-            <span>{item.label}</span>
-          </a>
-        ))}
-      </div>
-
       <div className="mt-auto flex items-center gap-2.5 rounded-xl bg-white/6 p-2.5">
         <span
           className="flex size-[30px] shrink-0 items-center justify-center rounded-full text-xs font-semibold"
@@ -172,7 +139,7 @@ export function AppSidebar(props: SidebarProps) {
               <Menu />
             </Button>
           </SheetTrigger>
-          <Image src="/adala-logo.png" alt="" width={24} height={24} className="size-6" />
+          <Image src="/app-logo.png" alt="" width={24} height={24} className="size-6" />
           <span className="text-sm font-semibold tracking-[0.05em]">ADALA</span>
         </div>
         <SheetContent

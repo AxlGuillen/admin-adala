@@ -13,7 +13,7 @@ export default function SinAccesoPage() {
         <div className="adala-glass rounded-[20px] p-[26px]">
           <div className="flex items-center gap-3">
             <Image
-              src="/adala-logo.png"
+              src="/app-logo.png"
               alt=""
               width={40}
               height={40}
