@@ -70,3 +70,17 @@ estado, ciudad, servicio, detalle) para que el equipo lo trabaje a mano, mas
 una hoja `Info` con los filtros que se aplicaron.
 
 Siguiente: asignacion de responsable por prospecto (cuando haya mas admins).
+
+## Monitoreo
+
+`GET /api/health` es publico (el proxy lo excluye de la sesion) y esta pensado
+para un monitor externo tipo UptimeRobot:
+
+- **200** `{ "status": "ok", "db": "ok", "latency_ms": n, "version": "sha" }` —
+  la app responde y Supabase contesto una consulta real (HEAD count como
+  `anon`, sin efectos secundarios).
+- **503** `{ "status": "error", "db": "unreachable" }` — Supabase no respondio
+  o tardo mas de 5 segundos.
+
+El healthcheck del formulario de la landing es aparte: el RPC
+`adala_form_healthcheck` prueba el camino de escritura (INSERT + rollback).

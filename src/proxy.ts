@@ -16,9 +16,10 @@ export default async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Todo menos assets estaticos e imagenes, que no necesitan sesion y solo
-     * gastarian una llamada a Supabase por archivo.
+     * Todo menos assets estaticos, imagenes y el healthcheck: no necesitan
+     * sesion y solo gastarian una llamada a Supabase por request. api/health
+     * ademas debe responder a monitores externos sin auth.
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|api/health|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };
