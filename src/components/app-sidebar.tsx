@@ -4,7 +4,13 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, LogOut, Menu, Users } from "lucide-react";
+import {
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  SquareKanban,
+  Users,
+} from "lucide-react";
 
 import { logout } from "@/app/(auth)/login/actions";
 import { Button } from "@/components/ui/button";
@@ -19,6 +25,7 @@ import { cn } from "@/lib/utils";
 const MODULES = [
   { href: "/", label: "Resumen", icon: LayoutDashboard },
   { href: "/prospectos", label: "Prospectos", icon: Users },
+  { href: "/seguimiento", label: "Seguimiento", icon: SquareKanban },
 ] as const;
 
 type SidebarProps = {

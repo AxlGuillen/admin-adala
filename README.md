@@ -59,9 +59,14 @@ cambios a un agente, ese archivo es el contrato.
 - **Prospectos** (`/prospectos`) — listado, buscador, filtros por servicio,
   estado y periodo, panel de detalle con UTMs y consentimientos, y descarga a
   Excel de todo lo que cumple los filtros activos.
+- **Seguimiento** (`/seguimiento`) — tablero kanban con las fases Nuevo,
+  Contactado, En seguimiento, Ganado y Descartado. Las tarjetas se arrastran
+  entre columnas (o se mueven desde su menu en tactil/teclado) y cada
+  prospecto tiene su historial de notas y cambios de estado. Posible siguiente
+  paso: columna "Estatus" real en el Excel.
 
 El Excel trae solo los datos de contacto (fecha, nombre, telefono, email,
 estado, ciudad, servicio, detalle) para que el equipo lo trabaje a mano, mas
 una hoja `Info` con los filtros que se aplicaron.
 
-Siguiente: control de seguimiento (estatus, asignacion, notas y bitacora).
+Siguiente: asignacion de responsable por prospecto (cuando haya mas admins).

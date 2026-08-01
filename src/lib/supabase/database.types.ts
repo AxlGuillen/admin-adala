@@ -46,6 +46,79 @@ export type Database = {
         }
         Relationships: []
       }
+      adala_prospect_notes: {
+        Row: {
+          author_email: string
+          author_id: string | null
+          body: string | null
+          created_at: string
+          from_status: string | null
+          id: string
+          kind: string
+          prospect_id: string
+          to_status: string | null
+        }
+        Insert: {
+          author_email: string
+          author_id?: string | null
+          body?: string | null
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          kind: string
+          prospect_id: string
+          to_status?: string | null
+        }
+        Update: {
+          author_email?: string
+          author_id?: string | null
+          body?: string | null
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          kind?: string
+          prospect_id?: string
+          to_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "adala_prospect_notes_prospect_id_fkey"
+            columns: ["prospect_id"]
+            isOneToOne: false
+            referencedRelation: "adala_prospects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      adala_prospect_tracking: {
+        Row: {
+          prospect_id: string
+          status: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          prospect_id: string
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          prospect_id?: string
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "adala_prospect_tracking_prospect_id_fkey"
+            columns: ["prospect_id"]
+            isOneToOne: true
+            referencedRelation: "adala_prospects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       adala_prospects: {
         Row: {
           accepts_marketing: boolean

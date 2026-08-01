@@ -53,7 +53,8 @@ carpeta, y **ningun modulo importa componentes de otro**. Catalogos y tipos si
 se comparten: `overview` reusa `serviceLabel` y el tipo `Prospect` de
 `prospects` porque son vocabulario del dominio, no UI.
 
-Modulos actuales: `overview` (ruta `/`) y `prospects` (ruta `/prospectos`).
+Modulos actuales: `overview` (ruta `/`), `prospects` (ruta `/prospectos`) y
+`seguimiento` (ruta `/seguimiento`, tablero kanban + bitacora de notas).
 
 ## Receta para agregar un modulo
 
@@ -115,6 +116,16 @@ Tablas actuales:
 - `adala_admins` — allowlist del panel. Signup cerrado: las filas se crean con
   la secret key, nunca desde el cliente. `adala_is_admin()` es el helper que
   usan las policies.
+- `adala_prospect_tracking` — fase de seguimiento (1:1 con prospects; sin fila
+  = "nuevo"). **El CHECK de `status` y `TRACKING_STATUSES` de
+  `src/features/seguimiento/constants.ts` son la misma lista**: cambiar una
+  implica migrar la otra.
+- `adala_prospect_notes` — bitacora del seguimiento (notas y cambios de
+  estado). Solo SELECT e INSERT por diseno: la bitacora no se edita ni borra.
+
+**`adala_prospects` nunca recibe UPDATE**: los datos que dejo el formulario de
+la landing son inmutables; todo el estado del panel vive en las tablas de
+seguimiento.
 
 Los tipos de `src/lib/supabase/database.types.ts` son **generados**. No se
 editan a mano; se corren con `bun run db:types` (requiere `bunx supabase login`).
